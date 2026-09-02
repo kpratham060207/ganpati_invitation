@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="#1a0a0a"/>
+  <circle cx="200" cy="180" r="60" fill="#ff9933" opacity="0.4"/>
+  <text x="200" y="195" text-anchor="middle" fill="#d4af37" font-size="56">=</text>
+  <text x="200" y="320" text-anchor="middle" fill="#faf3e8" font-size="18" font-family="sans-serif">Aarti Moment</text>
+</svg>

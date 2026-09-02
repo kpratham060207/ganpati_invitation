@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" fill="none">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#E8D5A3" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#C9A84C" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2A0F14" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldBody" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#F0E0B0"/>
+      <stop offset="45%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#7A5E28"/>
+    </linearGradient>
+    <linearGradient id="goldShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5A3" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#6B4E1E" stop-opacity="0.75"/>
+    </linearGradient>
+  </defs>
+  <!-- Warm divine halo -->
+  <ellipse cx="200" cy="210" rx="150" ry="170" fill="url(#halo)"/>
+  <!-- Lotus base -->
+  <path d="M200 470 C130 470 80 495 55 515 C95 505 145 495 200 495 C255 495 305 505 345 515 C320 495 270 470 200 470Z" fill="url(#goldShadow)" opacity="0.85"/>
+  <!-- Body silhouette -->
+  <ellipse cx="200" cy="340" rx="88" ry="72" fill="url(#goldBody)"/>
+  <!-- Dhoti -->
+  <path d="M118 345 C112 395 138 430 200 445 C262 430 288 395 282 345 Z" fill="url(#goldShadow)"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="215" rx="92" ry="82" fill="url(#goldBody)"/>
+  <!-- Ears -->
+  <ellipse cx="118" cy="210" rx="28" ry="34" fill="url(#goldShadow)" transform="rotate(-12 118 210)"/>
+  <ellipse cx="282" cy="210" rx="28" ry="34" fill="url(#goldShadow)" transform="rotate(12 282 210)"/>
+  <!-- Crown -->
+  <path d="M200 95 C175 120 158 132 148 150 C142 162 155 170 170 160 C185 150 192 135 200 122 C208 135 215 150 230 160 C245 170 258 162 252 150 C242 132 225 120 200 95Z" fill="url(#goldBody)"/>
+  <!-- Trunk -->
+  <path d="M200 248 C218 262 228 290 212 318 C198 340 175 348 162 332 C152 320 162 305 180 300 C195 296 202 278 202 262 C202 252 200 248 200 248Z" fill="url(#goldShadow)"/>
+  <!-- Eyes (subtle) -->
+  <path d="M158 205 Q168 196 178 205" stroke="#3A2010" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <path d="M222 205 Q232 196 242 205" stroke="#3A2010" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <!-- Tilak -->
+  <circle cx="200" cy="178" r="7" fill="#B84A62" opacity="0.65"/>
+</svg>

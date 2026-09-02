@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+/*
+ * Classy celebratory palette — royal maroon, antique gold, warm ivory.
+ * Elegant enough for a premium invite, warm enough for Ganpati festivity.
+ */
+:root {
+  --ink-deep: #2A0F14;
+  --ink-surface: #4A1825;
+  --ink-card: rgba(255, 250, 240, 0.07);
+  --gold: #C9A84C;
+  --gold-light: #E8D5A3;
+  --gold-muted: #9A7B3C;
+  --cream: #FAF6F0;
+  --cream-muted: #C4B5A5;
+  --celebration-rose: #B84A62;
+  --celebration-saffron: #D4842A;
+  --celebration-ivory: #FFF8EE;
+  /* Legacy festive aliases — mapped to classy tones */
+  --festive-orange: #D4842A;
+  --festive-yellow: #E8D5A3;
+  --festive-pink: #B84A62;
+  --festive-teal: #5A8A7A;
+  --festive-purple: #4A1825;
+  --accent-warm: #C9A84C;
+}
+
+@theme inline {
+  --color-ink-deep: var(--ink-deep);
+  --color-ink-surface: var(--ink-surface);
+  --color-ink-card: var(--ink-card);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-muted: var(--gold-muted);
+  --color-cream: var(--cream);
+  --color-cream-muted: var(--cream-muted);
+  --color-celebration-rose: var(--celebration-rose);
+  --color-celebration-saffron: var(--celebration-saffron);
+  --color-celebration-ivory: var(--celebration-ivory);
+  --color-festive-orange: var(--festive-orange);
+  --color-festive-yellow: var(--festive-yellow);
+  --color-festive-pink: var(--festive-pink);
+  --color-festive-teal: var(--festive-teal);
+  --color-festive-purple: var(--festive-purple);
+  --color-accent-warm: var(--accent-warm);
+  --color-temple-deep: var(--ink-deep);
+  --color-temple-card: var(--ink-card);
+  --color-maroon: var(--ink-surface);
+  --color-saffron: var(--celebration-saffron);
+  --color-saffron-light: var(--gold-light);
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-poppins);
+  --font-devanagari: var(--font-noto-devanagari);
+  --font-gujarati: var(--font-noto-gujarati);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safe-area helpers for notched phones — used on gate overlay and fixed UI */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  color: var(--cream);
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Fixed gradient layer — avoids iOS jank from background-attachment: fixed on body */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    165deg,
+    #2A0F14 0%,
+    #4A1825 35%,
+    #3D1220 65%,
+    #2A0F14 100%
+  );
+  pointer-events: none;
+}
+
+.font-gujarati {
+  font-family: var(--font-noto-gujarati), var(--font-noto-devanagari), sans-serif;
+}
+
+.font-devanagari {
+  font-family: var(--font-noto-devanagari), sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-body {
+  font-family: var(--font-poppins), system-ui, sans-serif;
+}
+
+/* Classy glass card — subtle gold edge, warm depth */
+.glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 250, 240, 0.1) 0%,
+    rgba(255, 250, 240, 0.04) 100%
+  );
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 250, 240, 0.12);
+}
+
+.glass-card:hover {
+  border-color: rgba(201, 168, 76, 0.4);
+  box-shadow:
+    0 12px 40px rgba(201, 168, 76, 0.12),
+    inset 0 1px 0 rgba(255, 250, 240, 0.18);
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-4px);
+}
+
+.section-ornament {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-muted) 20%,
+    var(--gold) 50%,
+    var(--gold-muted) 80%,
+    transparent
+  );
+  height: 2px;
+  width: 5rem;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--gold-muted), var(--gold));
+  border-radius: 3px;
+}
+
+@media (pointer: fine) {
+  .custom-cursor-active,
+  .custom-cursor-active a,
+  .custom-cursor-active button {
+    cursor: none;
+  }
+}
