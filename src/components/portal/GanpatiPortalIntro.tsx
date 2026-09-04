@@ -7,7 +7,7 @@ import { PortalCTA } from "@/components/portal/PortalCTA";
 import { GoldenTransitionOverlay } from "@/components/portal/GoldenTransitionOverlay";
 import type { PortalPhase } from "@/components/portal/GanpatiPortalCamera";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { useMouseParallax } from "@/hooks/useMouseParallax";
+import { useMouseParallaxRef } from "@/hooks/useMouseParallax";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { GANPATI_PORTAL } from "@/lib/ganpati-portal-config";
 import { createEntranceProgress, ENTRANCE_TIMING } from "@/lib/portal-entrance";
@@ -32,10 +32,6 @@ type GanpatiPortalIntroProps = {
   onComplete?: () => void;
 };
 
-function log(msg: string) {
-  console.log(`[ENTER] ${msg}`);
-}
-
 /**
  * GanpatiPortalIntro — Ganpati IS the portal.
  * One GSAP-driven cinematic sequence after "Tap to Enter".
@@ -55,7 +51,8 @@ export function GanpatiPortalIntro({
 
   const isMobile = useIsMobile();
   const reducedMotion = useReducedMotion();
-  const parallax = useMouseParallax(!isMobile && phase === "idle");
+  /* Ref-based parallax — no re-renders while the pointer moves */
+  const parallaxRef = useMouseParallaxRef(!isMobile && phase === "idle");
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -67,10 +64,9 @@ export function GanpatiPortalIntro({
   const handleCrossfadeStart = useCallback(() => {
     if (crossfadeStartedRef.current) return;
     crossfadeStartedRef.current = true;
-    log("transition start");
     onCrossfadeStart?.();
 
-    /* Intro layer fades out in sync with main page fade-in */
+    /* Intro dissolves into the warm maroon page underneath */
     gsap.to(rootRef.current, {
       opacity: 0,
       duration: ENTRANCE_TIMING.crossfadeDuration,
@@ -79,7 +75,6 @@ export function GanpatiPortalIntro({
   }, [onCrossfadeStart]);
 
   const handleCameraComplete = useCallback(() => {
-    log("navigation");
     onComplete?.();
   }, [onComplete]);
 
@@ -87,16 +82,13 @@ export function GanpatiPortalIntro({
     if (lockedRef.current || phase !== "idle") return;
     lockedRef.current = true;
     setIsEntering(true);
-    log("click");
 
-    /* CTA exit — opacity + slight downward drift, ease-out */
     if (ctaRef.current) {
       gsap.to(ctaRef.current, {
         opacity: 0,
         y: 8,
         duration: ENTRANCE_TIMING.ctaExit,
         ease: "power2.out",
-        onComplete: () => log("CTA exit"),
       });
     }
 
@@ -104,7 +96,7 @@ export function GanpatiPortalIntro({
       progressRef.current.pass = 1;
       progressRef.current.light = 1;
       setPhase("entering");
-      gsap.delayedCall(0.4, () => {
+      gsap.delayedCall(0.35, () => {
         handleCrossfadeStart();
         gsap.delayedCall(ENTRANCE_TIMING.crossfadeDuration, handleCameraComplete);
       });
@@ -122,7 +114,7 @@ export function GanpatiPortalIntro({
     >
       <GanpatiPortalCanvas
         phase={phase}
-        parallax={parallax}
+        parallaxRef={parallaxRef}
         isMobile={isMobile}
         reducedMotion={reducedMotion}
         progressRef={progressRef}

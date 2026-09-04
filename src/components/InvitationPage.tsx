@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, startTransition } from "react";
 import gsap from "gsap";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { useLocalizedFontClass } from "@/components/LocalizedText";
@@ -28,10 +28,6 @@ import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { ENTRANCE_TIMING } from "@/lib/portal-entrance";
 
-function log(msg: string) {
-  console.log(`[ENTER] ${msg}`);
-}
-
 function InvitationContent() {
   const [showIntro, setShowIntro] = useState(true);
   const [showMain, setShowMain] = useState(false);
@@ -42,30 +38,35 @@ function InvitationContent() {
   const isMobile = useIsMobile();
 
   /**
-   * Crossfade start — mount main page at opacity 0, then fade in
-   * while intro layer fades out (handled inside GanpatiPortalIntro).
+   * Crossfade — mount main under the golden wash, fade in together,
+   * and start hero motion immediately so the page continues the shot.
    */
   const handleCrossfadeStart = useCallback(() => {
-    setShowMain(true);
+    startTransition(() => {
+      setShowMain(true);
+      setHeroEntrance(true);
+    });
+
+    /* Wait one frame so mainRef is mounted, then fade in */
     requestAnimationFrame(() => {
-      if (!mainRef.current) return;
-      gsap.fromTo(
-        mainRef.current,
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: ENTRANCE_TIMING.crossfadeDuration,
-          ease: "power2.inOut",
-          onComplete: () => log("next page reveal"),
-        },
-      );
+      requestAnimationFrame(() => {
+        if (!mainRef.current) return;
+        gsap.fromTo(
+          mainRef.current,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: ENTRANCE_TIMING.crossfadeDuration,
+            ease: "power2.inOut",
+          },
+        );
+      });
     });
   }, []);
 
-  /** Entire entrance sequence finished — remove intro layer */
+  /** Sequence finished — drop the intro canvas to free GPU */
   const handlePortalComplete = useCallback(() => {
     setShowIntro(false);
-    setHeroEntrance(true);
   }, []);
 
   return (
@@ -81,7 +82,8 @@ function InvitationContent() {
         <div
           ref={mainRef}
           className={`${isTouch ? "" : "custom-cursor-active"} relative z-[50] min-h-screen`}
-          style={{ opacity: 0 }}
+          /* Match body maroon so the crossfade never flashes black */
+          style={{ opacity: 0, background: "var(--ink-deep)" }}
         >
           <SmoothScroll>
             {!isTouch && <CustomCursor />}

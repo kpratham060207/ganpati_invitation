@@ -1,8 +1,8 @@
-/** Ganpati-as-portal — palette and spatial layout */
+/** Ganpati-as-portal — palette tuned to hand off into page ink-deep maroon */
 export const GANPATI_PORTAL = {
-  void: "#040302",
-  deep: "#080605",
-  burgundy: "#1a090d",
+  void: "#0c0608",
+  deep: "#14080c",
+  burgundy: "#2A0F14",
   gold: "#C9A84C",
   goldLight: "#E8D5A3",
   goldMuted: "#9A7B3C",
@@ -61,7 +61,7 @@ export const PORTAL_CAMERA = {
 } as const;
 
 export const PORTAL_PARTICLE_COUNTS = {
-  inner: { desktop: 24, mobile: 12 },
-  foreground: { desktop: 10, mobile: 6 },
-  petals: { desktop: 8, mobile: 4 },
+  inner: { desktop: 18, mobile: 8 },
+  foreground: { desktop: 8, mobile: 4 },
+  petals: { desktop: 6, mobile: 3 },
 } as const;

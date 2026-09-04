@@ -2,23 +2,29 @@
 export type PortalEntranceProgress = {
   /** Camera dolly 0 → 1 */
   pass: number;
-  /** Golden illumination 0 → 1 (ramps in final ~600ms) */
+  /** Golden illumination 0 → 1 (ramps into the page handoff) */
   light: number;
 };
 
+/**
+ * One continuous cinematic beat.
+ * Light and crossfade overlap so colour never “cuts” to the main page.
+ */
 export const ENTRANCE_TIMING = {
-  ctaExit: 0.32,
-  cameraDelay: 0.2,
-  cameraDuration: 2.35,
-  lightRampStart: 1.75,
-  lightRampDuration: 0.65,
-  crossfadeStart: 2.25,
-  crossfadeDuration: 0.65,
-  totalDuration: 2.9,
+  ctaExit: 0.28,
+  cameraDelay: 0.15,
+  cameraDuration: 2.2,
+  /** Golden wash begins mid-dolly so warmth builds continuously */
+  lightRampStart: 1.35,
+  lightRampDuration: 1.1,
+  /** Crossfade begins while camera is still finishing — no dead pause */
+  crossfadeStart: 2.05,
+  crossfadeDuration: 0.75,
+  totalDuration: 2.8,
 } as const;
 
-/** Smooth cinematic ease — gentle start/end, no harsh jumps */
-export const ENTRANCE_EASE = "power3.inOut";
+/** Soft cinematic ease — same family as main-page motion (gentle in & out) */
+export const ENTRANCE_EASE = "power2.inOut";
 
 export function createEntranceProgress(): PortalEntranceProgress {
   return { pass: 0, light: 0 };

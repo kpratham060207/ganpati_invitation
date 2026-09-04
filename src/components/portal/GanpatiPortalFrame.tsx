@@ -12,13 +12,14 @@ import {
 } from "@/lib/ganpati-portal-config";
 import { PortalInnerWorld } from "@/components/portal/PortalInnerWorld";
 import { usePortalEntranceProgress } from "@/components/portal/PortalEntranceContext";
+import type { ParallaxPoint } from "@/hooks/useMouseParallax";
 
 const MASK_ID = 1;
 
 type GanpatiPortalFrameProps = {
   isMobile: boolean;
   entering: boolean;
-  parallax: { x: number; y: number };
+  parallaxRef: React.MutableRefObject<ParallaxPoint>;
 };
 
 /**
@@ -28,7 +29,7 @@ type GanpatiPortalFrameProps = {
 export function GanpatiPortalFrame({
   isMobile,
   entering,
-  parallax,
+  parallaxRef,
 }: GanpatiPortalFrameProps) {
   const progressRef = usePortalEntranceProgress();
   const artworkRef = useRef<THREE.Mesh>(null);
@@ -64,8 +65,17 @@ export function GanpatiPortalFrame({
     if (groupRef.current) {
       /* Idle parallax only — freeze rotation once entrance begins */
       if (!entering) {
-        groupRef.current.rotation.y = parallax.x * 0.035;
-        groupRef.current.rotation.x = parallax.y * 0.02;
+        const p = parallaxRef.current;
+        groupRef.current.rotation.y = THREE.MathUtils.lerp(
+          groupRef.current.rotation.y,
+          p.x * 0.035,
+          0.06,
+        );
+        groupRef.current.rotation.x = THREE.MathUtils.lerp(
+          groupRef.current.rotation.x,
+          p.y * 0.02,
+          0.06,
+        );
       }
       groupRef.current.scale.setScalar(breathe);
     }

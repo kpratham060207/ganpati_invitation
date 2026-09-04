@@ -5,7 +5,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 type Particle = { x: number; y: number; size: number; speed: number; opacity: number };
 
-/** Soft floating gold dust — celebratory but refined. */
+/** Soft floating gold dust — light canvas work, continuous drift */
 export function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reducedMotion = useReducedMotion();
@@ -15,60 +15,81 @@ export function FloatingParticles() {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let animationId = 0;
     let particles: Particle[] = [];
+    let lastFrame = 0;
+    /* Cap at ~30fps — smooth enough for dust, cheaper than 60fps */
+    const FRAME_MS = 33;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     const init = () => {
-      const count = Math.min(22, Math.floor(window.innerWidth / 55));
+      const count = Math.min(16, Math.floor(window.innerWidth / 70));
       particles = Array.from({ length: count }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
         size: Math.random() * 2 + 0.8,
-        speed: Math.random() * 0.25 + 0.08,
-        opacity: Math.random() * 0.35 + 0.1,
+        speed: Math.random() * 0.22 + 0.06,
+        opacity: Math.random() * 0.3 + 0.08,
       }));
     };
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
+    const draw = (now: number) => {
+      animationId = requestAnimationFrame(draw);
+      if (now - lastFrame < FRAME_MS) return;
+      lastFrame = now;
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.y -= p.speed;
         if (p.y < -8) {
-          p.y = canvas.height + 8;
-          p.x = Math.random() * canvas.width;
+          p.y = h + 8;
+          p.x = Math.random() * w;
         }
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(201, 168, 76, ${p.opacity})`;
         ctx.fill();
-      });
-      animationId = requestAnimationFrame(draw);
+      }
+    };
+
+    const onResize = () => {
+      resize();
+      init();
     };
 
     resize();
     init();
-    draw();
-    window.addEventListener("resize", () => {
-      resize();
-      init();
-    });
+    animationId = requestAnimationFrame(draw);
+    window.addEventListener("resize", onResize, { passive: true });
+
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
     };
   }, [reducedMotion]);
 
   if (reducedMotion) return null;
 
   return (
-    <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-[1] opacity-50" aria-hidden />
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-[1] opacity-45"
+      aria-hidden
+    />
   );
 }

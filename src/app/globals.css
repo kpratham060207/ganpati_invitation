@@ -138,10 +138,14 @@ body::before {
     rgba(255, 250, 240, 0.04) 100%
   );
   border: 1px solid rgba(201, 168, 76, 0.25);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(12px);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 250, 240, 0.12);
+  transition:
+    border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .glass-card:hover {
@@ -153,7 +157,9 @@ body::before {
 
 .card-3d {
   transform-style: preserve-3d;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-3d:hover {

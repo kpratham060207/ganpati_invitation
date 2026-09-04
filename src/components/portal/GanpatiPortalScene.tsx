@@ -7,20 +7,21 @@ import { PortalForeground } from "@/components/portal/PortalForeground";
 import { PortalDiyas } from "@/components/portal/PortalDiyas";
 import { EntranceLights } from "@/components/portal/EntranceLights";
 import { GANPATI_PORTAL } from "@/lib/ganpati-portal-config";
+import type { ParallaxPoint } from "@/hooks/useMouseParallax";
 
 type GanpatiPortalSceneProps = {
   phase: PortalPhase;
-  parallax: { x: number; y: number };
+  parallaxRef: React.MutableRefObject<ParallaxPoint>;
   isMobile: boolean;
   reducedMotion: boolean;
   onCrossfadeStart: () => void;
   onCameraComplete: () => void;
 };
 
-/** Ganpati IS the portal — single central composition, no corridor */
+/** Ganpati IS the portal — single central composition */
 export function GanpatiPortalScene({
   phase,
-  parallax,
+  parallaxRef,
   isMobile,
   reducedMotion,
   onCrossfadeStart,
@@ -31,13 +32,13 @@ export function GanpatiPortalScene({
   return (
     <>
       <color attach="background" args={[GANPATI_PORTAL.void]} />
-      <fog attach="fog" args={[GANPATI_PORTAL.deep, 5, 16]} />
+      <fog attach="fog" args={[GANPATI_PORTAL.deep, 5.5, 18]} />
 
       <EntranceLights />
 
       <GanpatiPortalCamera
         phase={phase}
-        liveParallax={parallax}
+        liveParallaxRef={parallaxRef}
         isMobile={isMobile}
         reducedMotion={reducedMotion}
         onCrossfadeStart={onCrossfadeStart}
@@ -48,7 +49,7 @@ export function GanpatiPortalScene({
         <GanpatiPortalFrame
           isMobile={isMobile}
           entering={entering}
-          parallax={parallax}
+          parallaxRef={parallaxRef}
         />
       </Suspense>
 

@@ -6,10 +6,11 @@ import { PortalEntranceContext } from "@/components/portal/PortalEntranceContext
 import type { PortalPhase } from "@/components/portal/GanpatiPortalCamera";
 import { GANPATI_PORTAL, PORTAL_CAMERA } from "@/lib/ganpati-portal-config";
 import type { PortalEntranceProgress } from "@/lib/portal-entrance";
+import type { ParallaxPoint } from "@/hooks/useMouseParallax";
 
 type GanpatiPortalCanvasProps = {
   phase: PortalPhase;
-  parallax: { x: number; y: number };
+  parallaxRef: React.MutableRefObject<ParallaxPoint>;
   isMobile: boolean;
   reducedMotion: boolean;
   progressRef: React.MutableRefObject<PortalEntranceProgress>;
@@ -19,24 +20,27 @@ type GanpatiPortalCanvasProps = {
 
 export function GanpatiPortalCanvas({
   phase,
-  parallax,
+  parallaxRef,
   isMobile,
   reducedMotion,
   progressRef,
   onCrossfadeStart,
   onCameraComplete,
 }: GanpatiPortalCanvasProps) {
-
   return (
     <PortalEntranceContext.Provider value={progressRef}>
       <Canvas
         className="absolute inset-0 touch-none"
-        dpr={isMobile ? [1, 1.25] : [1, 1.75]}
+        /* Cap pixel ratio — big latency win on retina without visible loss */
+        dpr={isMobile ? [1, 1.15] : [1, 1.5]}
         gl={{
           antialias: !isMobile,
           alpha: false,
           powerPreference: "high-performance",
+          stencil: true,
         }}
+        /* Slightly lower priority when tab is hidden */
+        performance={{ min: 0.5 }}
         camera={{
           fov: PORTAL_CAMERA.fov,
           near: 0.1,
@@ -47,7 +51,7 @@ export function GanpatiPortalCanvas({
       >
         <GanpatiPortalScene
           phase={phase}
-          parallax={parallax}
+          parallaxRef={parallaxRef}
           isMobile={isMobile}
           reducedMotion={reducedMotion}
           onCrossfadeStart={onCrossfadeStart}

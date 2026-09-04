@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useRef, useCallback } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
@@ -12,18 +12,24 @@ type Ganpati3DParallaxProps = {
 };
 
 /**
- * Layered 3D Ganpati scene with mouse/touch parallax — home mandap vibe.
- * Back layer: glowing halo + toran arch
- * Mid layer: colorful Ganpati murti
- * Front layers: diyas, modaks, marigolds (depth pop)
+ * Layered 3D Ganpati scene with smooth spring parallax —
+ * motion values avoid React re-renders on every pointer move.
  */
 export function Ganpati3DParallax({ className = "", size = "lg" }: Ganpati3DParallaxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const isTouch = useIsTouchDevice();
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
-  const dimensions = size === "lg" ? "h-60 w-52 sm:h-72 sm:w-64 md:h-96 md:w-80" : "h-48 w-40 sm:h-56 sm:w-48 md:h-72 md:w-64";
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  /* Soft spring — continuous, not snappy jumps */
+  const springX = useSpring(rotateX, { stiffness: 90, damping: 22, mass: 0.6 });
+  const springY = useSpring(rotateY, { stiffness: 90, damping: 22, mass: 0.6 });
+
+  const dimensions =
+    size === "lg"
+      ? "h-60 w-52 sm:h-72 sm:w-64 md:h-96 md:w-80"
+      : "h-48 w-40 sm:h-56 sm:w-48 md:h-72 md:w-64";
 
   const handleMove = useCallback(
     (clientX: number, clientY: number) => {
@@ -32,14 +38,12 @@ export function Ganpati3DParallax({ className = "", size = "lg" }: Ganpati3DPara
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const maxTilt = isTouch ? 6 : 14;
+      const maxTilt = isTouch ? 6 : 12;
 
-      setTilt({
-        x: ((clientY - centerY) / rect.height) * -maxTilt,
-        y: ((clientX - centerX) / rect.width) * maxTilt,
-      });
+      rotateX.set(((clientY - centerY) / rect.height) * -maxTilt);
+      rotateY.set(((clientX - centerX) / rect.width) * maxTilt);
     },
-    [reducedMotion, isTouch],
+    [reducedMotion, isTouch, rotateX, rotateY],
   );
 
   const handleMouseMove = (event: React.MouseEvent) => {
@@ -51,7 +55,10 @@ export function Ganpati3DParallax({ className = "", size = "lg" }: Ganpati3DPara
     if (touch) handleMove(touch.clientX, touch.clientY);
   };
 
-  const resetTilt = () => setTilt({ x: 0, y: 0 });
+  const resetTilt = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+  };
 
   const layer = (z: number, extra = "") =>
     reducedMotion ? "" : `translateZ(${z}px) ${extra}`;
@@ -68,9 +75,7 @@ export function Ganpati3DParallax({ className = "", size = "lg" }: Ganpati3DPara
     >
       <motion.div
         className="relative h-full w-full"
-        style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateX: tilt.x, rotateY: tilt.y }}
-        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+        style={{ transformStyle: "preserve-3d", rotateX: springX, rotateY: springY }}
       >
         {/* Back — warm golden halo */}
         <div

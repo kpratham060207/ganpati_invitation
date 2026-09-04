@@ -39,7 +39,7 @@ export function HeroSection({ playEntrance = false }: { playEntrance?: boolean }
             className="flex justify-center"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={shouldAnimate ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-            transition={{ duration: 1, ease: EASE.smooth, delay: 0.05 }}
+            transition={{ duration: 0.85, ease: EASE.smooth, delay: 0.02 }}
           >
             <Ganpati3DParallax size="lg" />
           </motion.div>
