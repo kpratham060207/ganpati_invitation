@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, startTransition } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { useLocalizedFontClass } from "@/components/LocalizedText";
@@ -33,39 +33,48 @@ function InvitationContent() {
   const [showMain, setShowMain] = useState(false);
   const [heroEntrance, setHeroEntrance] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
+  const fadedInRef = useRef(false);
   const fontClass = useLocalizedFontClass();
   const isTouch = useIsTouchDevice();
   const isMobile = useIsMobile();
 
   /**
-   * Crossfade — mount main under the golden wash, fade in together,
-   * and start hero motion immediately so the page continues the shot.
+   * When main mounts, fade it in. Must run in useEffect (after DOM attach) —
+   * never race requestAnimationFrame against a deferred setState.
    */
-  const handleCrossfadeStart = useCallback(() => {
-    startTransition(() => {
-      setShowMain(true);
-      setHeroEntrance(true);
-    });
+  useEffect(() => {
+    if (!showMain || fadedInRef.current) return;
+    const el = mainRef.current;
+    if (!el) return;
 
-    /* Wait one frame so mainRef is mounted, then fade in */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (!mainRef.current) return;
-        gsap.fromTo(
-          mainRef.current,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: ENTRANCE_TIMING.crossfadeDuration,
-            ease: "power2.inOut",
-          },
-        );
-      });
-    });
+    fadedInRef.current = true;
+    gsap.fromTo(
+      el,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        duration: ENTRANCE_TIMING.crossfadeDuration,
+        ease: "power2.inOut",
+        /* Hard guarantee — never leave the page invisible */
+        onComplete: () => {
+          el.style.opacity = "1";
+        },
+      },
+    );
+  }, [showMain]);
+
+  /** Begin handoff — mount main + start hero while intro still covers */
+  const handleCrossfadeStart = useCallback(() => {
+    setShowMain(true);
+    setHeroEntrance(true);
   }, []);
 
-  /** Sequence finished — drop the intro canvas to free GPU */
+  /** Intro finished — remove 3D canvas; main page must already be visible */
   const handlePortalComplete = useCallback(() => {
+    /* Safety net if GSAP never attached (e.g. missed mount frame) */
+    if (mainRef.current) {
+      mainRef.current.style.opacity = "1";
+    }
     setShowIntro(false);
   }, []);
 
@@ -82,7 +91,6 @@ function InvitationContent() {
         <div
           ref={mainRef}
           className={`${isTouch ? "" : "custom-cursor-active"} relative z-[50] min-h-screen`}
-          /* Match body maroon so the crossfade never flashes black */
           style={{ opacity: 0, background: "var(--ink-deep)" }}
         >
           <SmoothScroll>
